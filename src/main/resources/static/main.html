@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+    <!-- https://momentjs.com/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 카카오지도 -->
+
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4ae213553cf7f0b83cdbff9f14e5a718&libraries=services"></script>
+
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <div class="row" style="height: 600px;">
+                <div class="col-3 border">
+                    검색 및 필터
+                </div>
+                <div id="map" class="col-6 border"></div>
+                <div class="col-3 border">
+                    리스트
+                </div>
+            </div>
+        </div>
+        <div v-for="item in list">
+            지역코드:{{item.지역코드}}<br />
+            법정동:{{item.법정동}}<br />
+            거래금액:{{item.거래금액}}<br />
+            지번:{{item.지번}}<br />
+            아파트:{{item.아파트}}<br />
+            층:{{item.층}}<br />
+            건축년도:{{item.건축년도}}<br />
+            전용면적:{{item.전용면적}}<br />
+            년:{{item.년}}<br />
+            월:{{item.월}}<br />
+            일:{{item.일}}<br />
+            <hr />
+        </div>
+    </div>
+
+    <script>
+        var map = null;
+        var container = null;
+        var geocoder = null;
+        var mySet = new Set();
+
+        $(document).ready(function () {
+            container = document.getElementById("map");
+            var options = {
+                center: new kakao.maps.LatLng(33.450701, 126.570667),
+                level: 4,
+            };
+            map = new kakao.maps.Map(container, options);
+            geocoder = new kakao.maps.services.Geocoder();
+            searchAddrFromCoords(map, displayCenterInfo);
+
+
+
+            kakao.maps.event.addListener(map, 'idle', function () {
+                searchAddrFromCoords(map, displayCenterInfo);
+                mySet = new Set();
+            });
+        });
+
+
+
+        function searchAddrFromCoords(coords, callback) {
+            //myArr.splice(0, 3);
+            //mySet.clear();
+            // 좌표로 행정동 주소 정보를 요청합니다
+            geocoder.coord2RegionCode(coords.getCenter().getLng(), coords.getCenter().getLat(), callback);
+            geocoder.coord2RegionCode(coords.getBounds().getNorthEast().getLng(), coords.getBounds().getNorthEast()
+                .getLat(), callback);
+            geocoder.coord2RegionCode(coords.getBounds().getSouthWest().getLng(), coords.getBounds().getSouthWest()
+                .getLat(), callback);
+
+
+
+            setTimeout(function () {
+                console.log(Array.from(mySet));
+            }, 300);
+
+        }
+
+        function displayCenterInfo(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                //console.dir(result);
+
+                for (var i = 0; i < result.length; i++) {
+                    // 행정동의 region_type 값은 'H' 이므로
+                    if (result[i].region_type === "H") {
+                        //console.log(result[i].address_name);
+                        console.log(result[i].region_2depth_name);
+
+                        //console.log(result[i].region_3depth_name);
+                        mySet.add(result[i].region_2depth_name + "-" + result[i].region_3depth_name);
+                        break;
+                    }
+                }
+            }
+        }
+
+
+
+        new Vue({
+            el: "#app",
+            data: {
+                list: "",
+            },
+            methods: {
+                test() {
+                    axios
+                        .get("http://localhost:9999/happyhouse/api/APTDeal/11110")
+                        .then((response) => {
+                            //console.dir(response.data.data);
+                            this.list = response.data.data;
+                        })
+                        .catch((error) => {
+                            console.dir(error);
+                        });
+                },
+                getDongcode(path) {
+                    console.dir(path);
+                    axios
+                        .get("http://localhost:9999/happyhouse/api/dong/과천시-중앙동")
+                        .then((response) => {
+                            console.log("성공");
+                            console.dir(response);
+                        })
+                        .catch((error) => {
+                            console.log("실패");
+                            console.dir(error);
+                        });
+                },
+            },
+            created() {
+                this.test();
+            },
+        });
+    </script>
+</body>
+
+</html>
