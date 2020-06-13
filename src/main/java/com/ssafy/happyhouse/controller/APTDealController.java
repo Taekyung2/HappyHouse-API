@@ -37,7 +37,7 @@ public class APTDealController {
 	        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "=h1kJ5ttM3gl1tvQVRXWMOhLCjN5NFL5o92pSdzj3beq038TkfNaZcoAF0YrthGLa9fYWr17b3lVicIavN4b6KQ%3D%3D"); /*Service Key*/
 	        urlBuilder.append("&" + URLEncoder.encode("LAWD_CD","UTF-8") + "=" +URLEncoder.encode(dongcode, "UTF-8")); /*각 지역별 코드*/
 	        urlBuilder.append("&" + URLEncoder.encode("DEAL_YMD","UTF-8") + "=" + URLEncoder.encode("201910", "UTF-8")); /*월 단위 신고자료*/
-	        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*데이터 출력수*/
+	        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("30", "UTF-8")); /*데이터 출력수*/
 	        URL url = new URL(urlBuilder.toString());
 	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	        conn.setRequestMethod("GET");
