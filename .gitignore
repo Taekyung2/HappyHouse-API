@@ -29,3 +29,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### log file ###
+.log
+/log-2020-06-12.log
+/log-2020-06-10.log
