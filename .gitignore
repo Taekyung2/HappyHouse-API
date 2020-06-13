@@ -31,4 +31,14 @@ build/
 .vscode/
 
 ### log file ###
+<<<<<<< HEAD
 .log
+/log-2020-06-12.log
+/log-2020-06-10.log
+
+### log file ###
+.log
+/.gitignore
+=======
+.log
+>>>>>>> branch 'master' of https://lab.ssafy.com/gofeel8/happyhouseapi.git
