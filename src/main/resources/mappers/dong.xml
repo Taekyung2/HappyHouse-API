@@ -7,7 +7,7 @@
 	<select id="selectDong" resultType="dong">
 		select *
 		  from dong
-		  where gugun = #{gugun} and dong=#{dong}
+		  where gugun = #{gugun} and dong LIKE CONCAT('%', #{dong}, '%')
 	</select>
 	
 
